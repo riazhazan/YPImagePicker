@@ -217,12 +217,14 @@ public class YPCameraVC: UIViewController, UIGestureRecognizerDelegate, YPPermis
 
 extension YPCameraVC {
     public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        coordinator.animate(alongsideTransition: { (context) -> Void in
-            self.photoCapture.videoLayer.connection?.videoOrientation = self.photoCapture.transformOrientation(orientation: UIInterfaceOrientation(rawValue: UIApplication.shared.statusBarOrientation.rawValue)!)
-            //            self.prevLayer?.frame.size = self.myView.frame.size
-        }, completion: { (context) -> Void in
-            super.viewWillTransition(to: size, with: coordinator)
-        })
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            coordinator.animate(alongsideTransition: { (context) -> Void in
+                self.photoCapture.videoLayer.connection?.videoOrientation = self.photoCapture.transformOrientation(orientation: UIInterfaceOrientation(rawValue: UIApplication.shared.statusBarOrientation.rawValue)!)
+                //            self.prevLayer?.frame.size = self.myView.frame.size
+            }, completion: { (context) -> Void in
+                super.viewWillTransition(to: size, with: coordinator)
+            })
+        }
     }
 
 }
