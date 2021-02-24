@@ -66,4 +66,17 @@ struct YPHelper {
         let minutes = (interval / 60) % 60
         return String(format: "%02d:%02d", minutes, seconds)
     }
+    
+    static func transformOrientation(orientation: UIInterfaceOrientation) -> AVCaptureVideoOrientation {
+        switch orientation {
+        case .landscapeLeft:
+            return .landscapeLeft
+        case .landscapeRight:
+            return .landscapeRight
+        case .portraitUpsideDown:
+            return .portraitUpsideDown
+        default:
+            return .portrait
+        }
+    }
 }
