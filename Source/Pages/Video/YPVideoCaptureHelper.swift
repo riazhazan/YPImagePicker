@@ -22,14 +22,15 @@ class YPVideoCaptureHelper: NSObject {
     private var dateVideoStarted = Date()
     private let sessionQueue = DispatchQueue(label: "YPVideoVCSerialQueue")
     private var videoInput: AVCaptureDeviceInput?
-    private var videoOutput = AVCaptureMovieFileOutput()
+    var videoOutput = AVCaptureMovieFileOutput()
     private var videoRecordingTimeLimit: TimeInterval = 0
     private var isCaptureSessionSetup: Bool = false
     private var isPreviewSetup = false
     private var previewView: UIView!
     private var motionManager = CMMotionManager()
     private var initVideoZoomFactor: CGFloat = 1.0
-    
+    var videoLayer: AVCaptureVideoPreviewLayer!
+
     // MARK: - Init
     
     public func start(previewView: UIView, withVideoRecordingLimit: TimeInterval, completion: @escaping () -> Void) {
@@ -281,11 +282,14 @@ class YPVideoCaptureHelper: NSObject {
     }
     
     func setupPreview() {
-        let videoLayer = AVCaptureVideoPreviewLayer(session: session)
+        self.videoLayer = AVCaptureVideoPreviewLayer(session: session)
         DispatchQueue.main.async {
-            videoLayer.frame = self.previewView.bounds
-            videoLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
-            self.previewView.layer.addSublayer(videoLayer)
+            self.videoLayer.frame = self.previewView.bounds
+            self.videoLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                self.videoLayer.connection?.videoOrientation = YPHelper.transformOrientation(orientation: UIInterfaceOrientation(rawValue: UIApplication.shared.statusBarOrientation.rawValue)!)
+            }
+            self.previewView.layer.addSublayer(self.videoLayer)
         }
     }
 }

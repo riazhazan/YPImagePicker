@@ -94,7 +94,7 @@ extension YPPhotoCapture {
             self.videoLayer.frame = self.previewView.bounds
             self.videoLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
             if UIDevice.current.userInterfaceIdiom == .pad {
-                self.videoLayer.connection?.videoOrientation = self.transformOrientation(orientation: UIInterfaceOrientation(rawValue: UIApplication.shared.statusBarOrientation.rawValue)!)
+                self.videoLayer.connection?.videoOrientation = YPHelper.transformOrientation(orientation: UIInterfaceOrientation(rawValue: UIApplication.shared.statusBarOrientation.rawValue)!)
             }
             self.previewView.layer.addSublayer(self.videoLayer)
         }
@@ -177,19 +177,6 @@ extension YPPhotoCapture {
             connection?.videoOrientation = .landscapeRight
         default:
             connection?.videoOrientation = .portrait
-        }
-    }
-    
-    func transformOrientation(orientation: UIInterfaceOrientation) -> AVCaptureVideoOrientation {
-        switch orientation {
-        case .landscapeLeft:
-            return .landscapeLeft
-        case .landscapeRight:
-            return .landscapeRight
-        case .portraitUpsideDown:
-            return .portraitUpsideDown
-        default:
-            return .portrait
         }
     }
 }
