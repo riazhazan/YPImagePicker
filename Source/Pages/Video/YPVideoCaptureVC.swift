@@ -148,6 +148,7 @@ public class YPVideoCaptureVC: UIViewController, YPPermissionCheckable {
     }
 
     public func stopCamera() {
+        UIApplication.shared.isIdleTimerDisabled = false
         videoHelper.stopCamera()
     }
     
