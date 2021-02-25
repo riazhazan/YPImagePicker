@@ -307,13 +307,16 @@ extension YPVideoCaptureHelper: AVCaptureFileOutputRecordingDelegate {
                                      repeats: true)
         dateVideoStarted = Date()
     }
-    
+
     public func fileOutput(_ captureOutput: AVCaptureFileOutput,
                            didFinishRecordingTo outputFileURL: URL,
                            from connections: [AVCaptureConnection],
                            error: Error?) {
         if YPConfig.onlySquareImagesFromCamera {
+            let indicator = YPLoaders.fullScreenLoader
+            UIApplication.shared.keyWindow?.addSubview(indicator)
             YPVideoProcessor.cropToSquare(filePath: outputFileURL) { [weak self] url in
+                indicator.removeFromSuperview()
                 guard let _self = self, let u = url else { return }
                 _self.didCaptureVideo?(u)
             }
