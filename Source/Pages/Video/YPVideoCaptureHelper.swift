@@ -181,7 +181,7 @@ class YPVideoCaptureHelper: NSObject {
     // MARK: - Recording
     
     public func startRecording() {
-        
+        UIApplication.shared.isIdleTimerDisabled = true
         let outputURL = YPVideoProcessor.makeVideoPathURL(temporaryFolder: true, fileName: "recordedVideoRAW")
         
         checkOrientation { [weak self] orientation in
@@ -199,6 +199,7 @@ class YPVideoCaptureHelper: NSObject {
     
     public func stopRecording() {
         videoOutput.stopRecording()
+        UIApplication.shared.isIdleTimerDisabled = false
     }
     
     // Private
