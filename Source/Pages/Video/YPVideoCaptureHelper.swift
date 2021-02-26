@@ -293,6 +293,10 @@ class YPVideoCaptureHelper: NSObject {
             self.previewView.layer.addSublayer(self.videoLayer)
         }
     }
+    func getLengthOfRecordedVideo(url: URL) -> Double {
+        let duration = AVURLAsset(url: url).duration.seconds
+        return duration
+    }
 }
 
 extension YPVideoCaptureHelper: AVCaptureFileOutputRecordingDelegate {
