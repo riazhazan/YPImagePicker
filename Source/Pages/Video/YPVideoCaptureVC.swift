@@ -12,7 +12,7 @@ public class YPVideoCaptureVC: UIViewController, YPPermissionCheckable {
     
     public var didCaptureVideo: ((URL) -> Void)?
     
-    private let videoHelper = YPVideoCaptureHelper()
+    let videoHelper = YPVideoCaptureHelper()
     private let v = YPCameraView(overlayView: nil)
     private var viewState = ViewState()
     
@@ -23,22 +23,8 @@ public class YPVideoCaptureVC: UIViewController, YPPermissionCheckable {
     public required init() {
         super.init(nibName: nil, bundle: nil)
         title = YPConfig.wordings.videoTitle
-
         videoHelper.didCaptureVideo = { [weak self] videoURL in
             self?.resetVisualState()
-            
-            let length = floor(self?.videoHelper.getLengthOfRecordedVideo(url: videoURL) ?? 0)
-            let tooLong =  length > YPConfig.video.libraryTimeLimit
-            let tooShort = length < YPConfig.video.minimumTimeLimit
-            if tooLong || tooShort {
-                DispatchQueue.main.async {
-                    if let view = self?.view {
-                        let alert = tooLong ? YPAlert.videoTooLongAlert(view) : YPAlert.videoTooShortAlert(view)
-                        self?.present(alert, animated: true, completion: nil)
-                    }
-                }
-                return
-            }
             self?.didCaptureVideo?(videoURL)
         }
 

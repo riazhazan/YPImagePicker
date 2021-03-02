@@ -298,8 +298,12 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
     @objc
     func close() {
         // Cancelling exporting of all videos
+        print(mode)
         if let libraryVC = libraryVC {
             libraryVC.mediaManager.forseCancelExporting()
+        }
+        if let videoVC = videoVC {
+            videoVC.videoHelper.cancelledRecording = true
         }
         self.didClose?()
     }
