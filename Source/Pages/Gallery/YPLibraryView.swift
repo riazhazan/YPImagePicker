@@ -90,7 +90,7 @@ final class YPLibraryView: UIView {
         sv(
             warningLabel
         )
-        warningLabel.text = "Media processing is in progress, Please do not press home or lock the screen."
+        warningLabel.text = YPConfig.wordings.warningMessageToStayForeground
         warningLabel.backgroundColor = .white
         warningLabel.layer.cornerRadius  = 8
         warningLabel.clipsToBounds = true
