@@ -319,6 +319,7 @@ extension YPVideoCaptureHelper: AVCaptureFileOutputRecordingDelegate {
                            error: Error?) {
         if cancelledRecording {
             cancelledRecording = false
+            timer.invalidate()
             return
         }
         if YPConfig.onlySquareImagesFromCamera {
