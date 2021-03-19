@@ -41,4 +41,5 @@ public struct YPWordings {
     public var filter = ypLocalized("YPImagePickerFilter")
     public var crop = ypLocalized("YPImagePickerCrop")
     public var warningMaxItemsLimit = ypLocalized("YPImagePickerWarningItemsLimit")
+    public var warningMessageToStayForeground = "Media processing is in progress, Please do not press home or lock the screen."
 }
