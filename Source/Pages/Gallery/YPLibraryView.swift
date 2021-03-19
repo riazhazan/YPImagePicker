@@ -22,6 +22,7 @@ final class YPLibraryView: UIView {
     let maxNumberWarningView = UIView()
     let maxNumberWarningLabel = UILabel()
     let progressView = UIProgressView()
+    let warningLabel = UILabel()
     let line = UIView()
     var shouldShowLoader = false
     
@@ -41,6 +42,7 @@ final class YPLibraryView: UIView {
         
         setupMaxNumberOfItemsView()
         setupProgressBarView()
+        setupWarningLabel()
     }
     
     /// At the bottom there is a view that is visible when selected a limit of items with multiple selection
@@ -82,6 +84,23 @@ final class YPLibraryView: UIView {
         progressView.progressTintColor = YPConfig.colors.progressBarCompletedColor ?? YPConfig.colors.tintColor
         progressView.isHidden = true
         progressView.isUserInteractionEnabled = false
+    }
+    
+    func setupWarningLabel() {
+        sv(
+            warningLabel
+        )
+        warningLabel.text = "Selected media is processing, Please do not press home or lock the screen."
+        warningLabel.centerVertically()
+        warningLabel.centerHorizontally()
+        warningLabel.width(self.bounds.width - 40)
+        warningLabel.textAlignment = .center
+        warningLabel.font = YPConfig.fonts.pickerTitleFont
+        warningLabel.isHidden = true
+        warningLabel.center = self.center
+        warningLabel.numberOfLines = 0
+        warningLabel.textColor = UIColor.ypSystemRed
+        
     }
 }
 
@@ -131,6 +150,7 @@ extension YPLibraryView {
     func updateProgress(_ progress: Float) {
         progressView.isHidden = progress > 0.99 || progress == 0
         progressView.progress = progress
+        warningLabel.isHidden = progress > 0.99 || progress == 0
         UIView.animate(withDuration: 0.1, animations: progressView.layoutIfNeeded)
     }
     
