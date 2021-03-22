@@ -519,6 +519,14 @@ public class YPLibraryVC: UIViewController, YPPermissionCheckable {
                                 resultMediaItems.append(YPMediaItem.video(v: videoItem))
                             } else {
                                 print("YPLibraryVC -> selectedMedia -> Problems with fetching videoURL.")
+                                if resultMediaItems.count < selectedAssets.count {
+                                    DispatchQueue.main.async {
+                                        let alert = YPAlert.showAlert(self.view, title: "Video Export Failed", message: "Failed to export video. Please try again") {
+                                            self.parent?.dismiss(animated: true, completion: nil)
+                                        }
+                                        self.present(alert, animated: true, completion: nil)
+                                    }
+                                }
                             }
                             asyncGroup.leave()
                         }
@@ -574,6 +582,12 @@ public class YPLibraryVC: UIViewController, YPPermissionCheckable {
                                 videoCallback(video)
                             } else {
                                 print("YPLibraryVC -> selectedMedia -> Problems with fetching videoURL.")
+                                DispatchQueue.main.async {
+                                    let alert = YPAlert.showAlert(self.view, title: "Video Export Failed", message: "Failed to export video. Please try again"){
+                                        self.parent?.dismiss(animated: true, completion: nil)
+                                    }
+                                    self.present(alert, animated: true, completion: nil)
+                                }
                             }
                         }
                     })
