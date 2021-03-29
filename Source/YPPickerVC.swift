@@ -318,10 +318,11 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
                 libraryVC.selectedMedia(photoCallback: { photo in
                     self?.didSelectItems?([YPMediaItem.photo(p: photo)])
                 }, videoCallback: { video in
-                    self?.didSelectItems?([YPMediaItem
-                        .video(v: video)])
+                    self?.didSelectItems?([YPMediaItem.video(v: video)])
                 }, multipleItemsCallback: { items in
                     self?.didSelectItems?(items)
+                }, failureCallback: { errorMessage in
+                    self?.handleMediaProcessingFailureError()
                 })
             }
         }
@@ -331,6 +332,18 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
         libraryVC?.v.assetZoomableView.videoView.deallocate()
         videoVC?.stopCamera()
         cameraVC?.stopCamera()
+    }
+    
+    func handleMediaProcessingFailureError() {
+        DispatchQueue.main.async {
+            let alert = YPAlert.showAlert(self.view, title: YPConfig.wordings.videoProcessingFailedTitle, message: YPConfig.wordings.videoProcessingFailedMessage) {
+                if let libraryVC = self.libraryVC {
+                    libraryVC.mediaManager.forseCancelExporting()
+                }
+                self.dismiss(animated: true, completion: nil)
+            }
+            self.present(alert, animated: true, completion: nil)
+        }
     }
 }
 

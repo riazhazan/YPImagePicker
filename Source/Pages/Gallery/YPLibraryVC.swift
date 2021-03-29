@@ -469,7 +469,8 @@ public class YPLibraryVC: UIViewController, YPPermissionCheckable {
     
     public func selectedMedia(photoCallback: @escaping (_ photo: YPMediaPhoto) -> Void,
                               videoCallback: @escaping (_ videoURL: YPMediaVideo) -> Void,
-                              multipleItemsCallback: @escaping (_ items: [YPMediaItem]) -> Void) {
+                              multipleItemsCallback: @escaping (_ items: [YPMediaItem]) -> Void,
+                              failureCallback: @escaping (_ errorMessage: String) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async {
             
             let selectedAssets: [(asset: PHAsset, cropRect: CGRect?)] = self.selection.map {
@@ -519,14 +520,7 @@ public class YPLibraryVC: UIViewController, YPPermissionCheckable {
                                 resultMediaItems.append(YPMediaItem.video(v: videoItem))
                             } else {
                                 print("YPLibraryVC -> selectedMedia -> Problems with fetching videoURL.")
-                                if resultMediaItems.count < selectedAssets.count {
-                                    DispatchQueue.main.async {
-                                        let alert = YPAlert.showAlert(self.view, title: "Video Export Failed", message: "Failed to export video. Please try again") {
-                                            self.parent?.dismiss(animated: true, completion: nil)
-                                        }
-                                        self.present(alert, animated: true, completion: nil)
-                                    }
-                                }
+                                failureCallback(YPConfig.wordings.videoProcessingFailedMessage)
                             }
                             asyncGroup.leave()
                         }
@@ -582,12 +576,7 @@ public class YPLibraryVC: UIViewController, YPPermissionCheckable {
                                 videoCallback(video)
                             } else {
                                 print("YPLibraryVC -> selectedMedia -> Problems with fetching videoURL.")
-                                DispatchQueue.main.async {
-                                    let alert = YPAlert.showAlert(self.view, title: "Video Export Failed", message: "Failed to export video. Please try again"){
-                                        self.parent?.dismiss(animated: true, completion: nil)
-                                    }
-                                    self.present(alert, animated: true, completion: nil)
-                                }
+                                failureCallback(YPConfig.wordings.videoProcessingFailedMessage)
                             }
                         }
                     })
