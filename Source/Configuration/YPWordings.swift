@@ -41,6 +41,7 @@ public struct YPWordings {
     public var filter = ypLocalized("YPImagePickerFilter")
     public var crop = ypLocalized("YPImagePickerCrop")
     public var warningMaxItemsLimit = ypLocalized("YPImagePickerWarningItemsLimit")
+    public var retry = "Retry"
     public var warningMessageToStayForeground = "Media processing is in progress, Please do not press home or lock the screen."
     public var videoProcessingFailedTitle = "Video processing interrupted"
     public var videoProcessingFailedMessage = "Video processing failed. Please try again"

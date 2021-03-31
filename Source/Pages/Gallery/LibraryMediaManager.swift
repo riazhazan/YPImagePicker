@@ -208,6 +208,10 @@ class LibraryMediaManager {
                 v?.updateProgress(0)
                 self.exportTimer = nil
             }
+            if !self.currentExportSessions.contains(exportSession) {
+                sender.invalidate()
+                self.exportTimer = nil
+            }
         }
     }
     
@@ -215,5 +219,8 @@ class LibraryMediaManager {
         for s in self.currentExportSessions {
             s.cancelExport()
         }
+    }
+    func removeAllExportSessions() {
+        self.currentExportSessions.removeAll()
     }
 }

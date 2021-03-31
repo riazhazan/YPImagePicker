@@ -45,7 +45,7 @@ struct YPAlert {
         return alert
     }
     
-    static func showAlert(_ sourceView: UIView, title: String, message: String, okAction: @escaping() -> Void ) -> UIAlertController {
+    static func showAlert(_ sourceView: UIView, title: String, message: String, secondaryTitle: String?, okAction: @escaping() -> Void, secondaryAction: @escaping() -> Void ) -> UIAlertController {
         let alert = UIAlertController(title: title,
                                       message: message,
                                       preferredStyle: .alert)
@@ -60,6 +60,13 @@ struct YPAlert {
         alert.addAction(UIAlertAction(title: YPConfig.wordings.ok, style: UIAlertAction.Style.default, handler: { (_) in
             okAction()
         }))
+        
+        if let secondaryButtonTitle = secondaryTitle {
+            alert.addAction(UIAlertAction(title: secondaryButtonTitle, style: UIAlertAction.Style.cancel, handler: { (_) in
+                secondaryAction()
+            }))
+        }
+        
         return alert
     }
 }

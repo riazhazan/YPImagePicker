@@ -336,11 +336,15 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
     
     func handleMediaProcessingFailureError() {
         DispatchQueue.main.async {
-            let alert = YPAlert.showAlert(self.view, title: YPConfig.wordings.videoProcessingFailedTitle, message: YPConfig.wordings.videoProcessingFailedMessage) {
+            let alert = YPAlert.showAlert(self.view, title: YPConfig.wordings.videoProcessingFailedTitle, message: YPConfig.wordings.videoProcessingFailedMessage, secondaryTitle: YPConfig.wordings.retry) {
+                    self.dismiss(animated: true, completion: nil)
+            } secondaryAction: {
                 if let libraryVC = self.libraryVC {
                     libraryVC.mediaManager.forseCancelExporting()
+                    libraryVC.mediaManager.removeAllExportSessions()
+                    libraryVC.isProcessing =  false
                 }
-                self.dismiss(animated: true, completion: nil)
+                self.done()
             }
             self.present(alert, animated: true, completion: nil)
         }
