@@ -319,7 +319,11 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
                     self?.didSelectItems?([YPMediaItem.photo(p: photo)])
                 }, videoCallback: { video in
                     self?.didSelectItems?([YPMediaItem.video(v: video)])
-                }, multipleItemsCallback: { items in
+                }, multipleItemsCallback: { (items, isFailedAny)  in
+                    if isFailedAny {
+                        self?.handleMediaProcessingFailureError(processedFiles: items)
+                        return
+                    }
                     self?.didSelectItems?(items)
                 }, failureCallback: { videos in
                     self?.handleMediaProcessingFailureError(processedFiles: videos)
