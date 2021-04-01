@@ -470,7 +470,7 @@ public class YPLibraryVC: UIViewController, YPPermissionCheckable {
     public func selectedMedia(photoCallback: @escaping (_ photo: YPMediaPhoto) -> Void,
                               videoCallback: @escaping (_ videoURL: YPMediaVideo) -> Void,
                               multipleItemsCallback: @escaping (_ items: [YPMediaItem]) -> Void,
-                              failureCallback: @escaping (_ errorMessage: String) -> Void) {
+                              failureCallback: @escaping (_ items: [YPMediaItem]) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async {
             
             let selectedAssets: [(asset: PHAsset, cropRect: CGRect?)] = self.selection.map {
@@ -520,7 +520,7 @@ public class YPLibraryVC: UIViewController, YPPermissionCheckable {
                                 resultMediaItems.append(YPMediaItem.video(v: videoItem))
                             } else {
                                 print("YPLibraryVC -> selectedMedia -> Problems with fetching videoURL.")
-                                failureCallback(YPConfig.wordings.videoProcessingFailedMessage)
+                                failureCallback(resultMediaItems)
                             }
                             asyncGroup.leave()
                         }
@@ -576,7 +576,7 @@ public class YPLibraryVC: UIViewController, YPPermissionCheckable {
                                 videoCallback(video)
                             } else {
                                 print("YPLibraryVC -> selectedMedia -> Problems with fetching videoURL.")
-                                failureCallback(YPConfig.wordings.videoProcessingFailedMessage)
+                                failureCallback([])
                             }
                         }
                     })

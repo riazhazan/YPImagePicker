@@ -321,8 +321,8 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
                     self?.didSelectItems?([YPMediaItem.video(v: video)])
                 }, multipleItemsCallback: { items in
                     self?.didSelectItems?(items)
-                }, failureCallback: { errorMessage in
-                    self?.handleMediaProcessingFailureError()
+                }, failureCallback: { videos in
+                    self?.handleMediaProcessingFailureError(processedFiles: videos)
                 })
             }
         }
@@ -334,10 +334,15 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
         cameraVC?.stopCamera()
     }
     
-    func handleMediaProcessingFailureError() {
+    func handleMediaProcessingFailureError(processedFiles: [YPMediaItem]) {
+        let message = processedFiles.count >= 1 ? YPConfig.wordings.someVideoProcessingFailedMessage : YPConfig.wordings.videoProcessingFailedMessage
         DispatchQueue.main.async {
-            let alert = YPAlert.showAlert(self.view, title: YPConfig.wordings.videoProcessingFailedTitle, message: YPConfig.wordings.videoProcessingFailedMessage, secondaryTitle: YPConfig.wordings.retry) {
+            let alert = YPAlert.showAlert(self.view, title: YPConfig.wordings.videoProcessingFailedTitle, message: message, secondaryTitle: YPConfig.wordings.retry) {
+                if processedFiles.count <= 0 {
                     self.dismiss(animated: true, completion: nil)
+                } else {
+                    self.didSelectItems?(processedFiles)
+                }
             } secondaryAction: {
                 if let libraryVC = self.libraryVC {
                     libraryVC.mediaManager.forseCancelExporting()
