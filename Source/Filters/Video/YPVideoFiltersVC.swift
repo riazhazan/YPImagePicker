@@ -22,7 +22,7 @@ public class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     @IBOutlet weak var coverThumbSelectorView: ThumbSelectorView!
 
     public var inputVideo: YPMediaVideo!
-    public var inputAsset: AVAsset { return AVAsset(url: inputVideo.url) }
+    public var inputAsset: AVAsset { return AVAsset(url: inputVideo.url ?? URL(fileURLWithPath: "/nil")) }
     
     private var playbackTimeCheckerTimer: Timer?
     private var imageGenerator: AVAssetImageGenerator?
@@ -122,7 +122,8 @@ public class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         navigationItem.rightBarButtonItem = YPLoaders.defaultLoader
 
         do {
-            let asset = AVURLAsset(url: inputVideo.url)
+            guard let url = inputVideo.url else {return}
+            let asset = AVURLAsset(url: url)
             let trimmedAsset = try asset
                 .assetByTrimming(startTime: trimmerView.startTime ?? CMTime.zero,
                                  endTime: trimmerView.endTime ?? inputAsset.duration)
