@@ -311,3 +311,18 @@ internal struct YPTrimError: Error {
         self.underlyingError = underlyingError
     }
 }
+
+extension PHAsset {
+    var thumbnailImage : UIImage {
+        get {
+            let manager = PHImageManager.default()
+            let option = PHImageRequestOptions()
+            var thumbnail = UIImage()
+            option.isSynchronous = true
+            manager.requestImage(for: self, targetSize: CGSize(width: 300, height: 300), contentMode: .aspectFit, options: option, resultHandler: {(result, info)->Void in
+                thumbnail = result!
+            })
+            return thumbnail
+        }
+    }
+}
