@@ -75,7 +75,9 @@ override open func viewDidLoad() {
             transition.duration = 0.3
             transition.timingFunction = CAMediaTimingFunction(name: CAMediaTimingFunctionName.easeInEaseOut)
             transition.type = CATransitionType.fade
-            self?.view.layer.add(transition, forKey: nil)
+            DispatchQueue.main.async {
+                self?.view.layer.add(transition, forKey: nil)
+            }
             
             // Multiple items flow
             if items.count > 1 {
