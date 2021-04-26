@@ -571,7 +571,9 @@ public class YPLibraryVC: UIViewController, YPPermissionCheckable {
                 case .audio, .unknown:
                     return
                 case .video:
-                    
+                    if self.fitsVideoLengthLimits(asset: asset) == false {
+                        return
+                    }
                     let ypMediaItem = YPMediaVideo(thumbnail: nil, videoURL: nil, fromCamera: false, asset: asset, assetIdentifier: assetId, cropRect: cropRect)
                     videoCallback(ypMediaItem)
                     
