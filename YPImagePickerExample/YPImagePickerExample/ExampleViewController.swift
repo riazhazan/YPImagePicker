@@ -18,7 +18,8 @@ class ExampleViewController: UIViewController {
     let selectedImageV = UIImageView()
     let pickButton = UIButton()
     let resultsButton = UIButton()
-
+    let mediaManager = MediaManager()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -46,6 +47,7 @@ class ExampleViewController: UIViewController {
                                      height: 100)
         resultsButton.addTarget(self, action: #selector(showResults), for: .touchUpInside)
         view.addSubview(resultsButton)
+        mediaManager.initialize()
     }
 
     @objc
@@ -99,7 +101,7 @@ class ExampleViewController: UIViewController {
         config.shouldSaveNewPicturesToAlbum = false
 
         /* Choose the videoCompression. Defaults to AVAssetExportPresetHighestQuality */
-        config.video.compression = AVAssetExportPresetMediumQuality
+        config.video.compression = AVAssetExportPresetPassthrough
 
         /* Defines the name of the album when saving pictures in the user's photo library.
            In general that would be your App name. Defaults to "DefaultYPImagePickerAlbumName" */
@@ -123,7 +125,7 @@ class ExampleViewController: UIViewController {
         /* Defines the time limit for videos from the library.
            Defaults to 60 seconds. */
         config.video.libraryTimeLimit = 500.0
-
+        config.showsVideoTrimmer = false
         /* Adds a Crop step in the photo taking process, after filters. Defaults to .none */
         config.showsCrop = .rectangle(ratio: (16/9))
 
@@ -152,7 +154,7 @@ class ExampleViewController: UIViewController {
 //        config.library.minNumberOfItems = 2
 
         /* Skip selection gallery after multiple selections */
-        // config.library.skipSelectionsGallery = true
+         config.library.skipSelectionsGallery = true
 
         /* Here we use a per picker configuration. Configuration is always shared.
            That means than when you create one picker with configuration, than you can create other picker with just
@@ -206,16 +208,19 @@ class ExampleViewController: UIViewController {
                     picker.dismiss(animated: true, completion: nil)
                 case .video(let video):
                     self.selectedImageV.image = video.thumbnail
+                    DispatchQueue.main.async {
+                        picker.dismiss(animated: true, completion: {
+                            self.processVideo(video: video)
+                        })
+                    }
+                    
+//                    let player = AVPlayer(playerItem: AVPlayerItem(url:assetURL))
+//                    playerVC.player = player
 
-                    let assetURL = video.url
-                    let playerVC = AVPlayerViewController()
-                    let player = AVPlayer(playerItem: AVPlayerItem(url:assetURL))
-                    playerVC.player = player
-
-                    picker.dismiss(animated: true, completion: { [weak self] in
-                        self?.present(playerVC, animated: true, completion: nil)
-                        print("😀 \(String(describing: self?.resolutionForLocalVideo(url: assetURL)!))")
-                    })
+//                    picker.dismiss(animated: true, completion: { [weak self] in
+//                        self?.present(playerVC, animated: true, completion: nil)
+//                        print("😀 \(String(describing: self?.resolutionForLocalVideo(url: assetURL)!))")
+//                    })
                 }
             }
         }
@@ -247,6 +252,20 @@ class ExampleViewController: UIViewController {
 
         present(picker, animated: true, completion: nil)
     }
+    
+    func processVideo(video: YPMediaVideo) {
+        guard let asset: PHAsset = PHAsset.fetchAssets(withLocalIdentifiers: [video.assetIdentifier!], options: PHFetchOptions())[0] else {
+            return
+        }
+        let playerVC = AVPlayerViewController()
+        mediaManager.fetchVideoUrlAndCrop(for: asset, cropRect: video.cropRect ?? CGRect.zero) { (videoUrl) in
+            print(videoUrl)
+            let player = AVPlayer(playerItem: AVPlayerItem(url: videoUrl!))
+            playerVC.player = player
+            self.present(playerVC, animated: true, completion: nil)
+        }
+    }
+    
 }
 
 // Support methods
@@ -267,3 +286,109 @@ extension ExampleViewController: YPImagePickerDelegate {
         return true// indexPath.row != 2
     }
 }
+
+//extension ExampleViewController {
+//    func fetchVideoUrlAndCropWithDuration(for videoAsset: PHAsset,
+//                                          cropRect: CGRect,
+//                                          duration: CMTime?,
+//                                          callback: @escaping (_ videoURL: URL?) -> Void) {
+//        let videosOptions = PHVideoRequestOptions()
+//        videosOptions.isNetworkAccessAllowed = true
+//        videosOptions.deliveryMode = .highQualityFormat
+//        imageManager?.requestAVAsset(forVideo: videoAsset, options: videosOptions) { asset, _, _ in
+//            do {
+//                guard let asset = asset else { print("⚠️ PHCachingImageManager >>> Don't have the asset"); return }
+//
+//                let assetComposition = AVMutableComposition()
+//                let assetMaxDuration = self.getMaxVideoDuration(between: duration, andAssetDuration: asset.duration)
+//                let trackTimeRange = CMTimeRangeMake(start: CMTime.zero, duration: assetMaxDuration)
+//
+//                // 1. Inserting audio and video tracks in composition
+//
+//                guard let videoTrack = asset.tracks(withMediaType: AVMediaType.video).first,
+//                    let videoCompositionTrack = assetComposition
+//                        .addMutableTrack(withMediaType: .video,
+//                                         preferredTrackID: kCMPersistentTrackID_Invalid) else {
+//                                            print("⚠️ PHCachingImageManager >>> Problems with video track")
+//                                            return
+//
+//                }
+//                if let audioTrack = asset.tracks(withMediaType: AVMediaType.audio).first,
+//                    let audioCompositionTrack = assetComposition
+//                        .addMutableTrack(withMediaType: AVMediaType.audio,
+//                                         preferredTrackID: kCMPersistentTrackID_Invalid) {
+//                    try audioCompositionTrack.insertTimeRange(trackTimeRange, of: audioTrack, at: CMTime.zero)
+//                }
+//
+//                try videoCompositionTrack.insertTimeRange(trackTimeRange, of: videoTrack, at: CMTime.zero)
+//
+//                // Layer Instructions
+//                let layerInstructions = AVMutableVideoCompositionLayerInstruction(assetTrack: videoCompositionTrack)
+//                var transform = videoTrack.preferredTransform
+//                let videoSize = videoTrack.naturalSize.applying(transform)
+//                transform.tx = (videoSize.width < 0) ? abs(videoSize.width) : 0.0
+//                transform.ty = (videoSize.height < 0) ? abs(videoSize.height) : 0.0
+//                transform.tx -= cropRect.minX
+//                transform.ty -= cropRect.minY
+//                layerInstructions.setTransform(transform, at: CMTime.zero)
+//                videoCompositionTrack.preferredTransform = transform
+//                // CompositionInstruction
+//                let mainInstructions = AVMutableVideoCompositionInstruction()
+//                mainInstructions.timeRange = trackTimeRange
+//                mainInstructions.layerInstructions = [layerInstructions]
+//
+//                // Video Composition
+//                let videoComposition = AVMutableVideoComposition(propertiesOf: asset)
+//                videoComposition.instructions = [mainInstructions]
+//                videoComposition.renderSize = cropRect.size // needed?
+//
+//                // 5. Configuring export session
+//
+//                let fileURL = URL(fileURLWithPath: NSTemporaryDirectory())
+//                    .appendingUniquePathComponent(pathExtension: YPConfig.video.fileType.fileExtension)
+//                let exportSession = assetComposition
+//                    .export(to: fileURL,
+//                            videoComposition: videoComposition,
+//                            removeOldFile: true) { [weak self] session in
+//                                DispatchQueue.main.async {
+//                                    switch session.status {
+//                                    case .completed:
+//                                        if let url = session.outputURL {
+//                                            if let index = self?.currentExportSessions.firstIndex(of: session) {
+//                                                self?.currentExportSessions.remove(at: index)
+//                                            }
+//                                            callback(url)
+//                                        } else {
+//                                            print("LibraryMediaManager -> Don't have URL.")
+//                                            callback(nil)
+//                                        }
+//                                    case .failed:
+//                                        print("LibraryMediaManager")
+//                                        print("Export of the video failed : \(String(describing: session.error))")
+//                                        callback(nil)
+//                                    default:
+//                                        print("LibraryMediaManager")
+//                                        print("Export session completed with \(session.status) status. Not handled.")
+//                                        callback(nil)
+//                                    }
+//                                }
+//                }
+//
+//                // 6. Exporting
+//                DispatchQueue.main.async {
+//                    self.exportTimer = Timer.scheduledTimer(timeInterval: 0.1,
+//                                                            target: self,
+//                                                            selector: #selector(self.onTickExportTimer),
+//                                                            userInfo: exportSession,
+//                                                            repeats: true)
+//                }
+//
+//                if let s = exportSession {
+//                    self.currentExportSessions.append(s)
+//                }
+//            } catch let error {
+//                print("⚠️ PHCachingImageManager >>> \(error)")
+//            }
+//        }
+//    }
+//}

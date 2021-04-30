@@ -1,17 +1,15 @@
 //
-//  LibraryMediaManager.swift
-//  YPImagePicker
+//  MediaManager.swift
+//  YPImagePickerExample
 //
-//  Created by Sacha DSO on 26/01/2018.
-//  Copyright © 2018 Yummypets. All rights reserved.
+//  Created by Riaz Hassan on 20/04/21.
+//  Copyright © 2021 Octopepper. All rights reserved.
 //
 
 import UIKit
 import Photos
 
-class LibraryMediaManager {
-    
-    weak var v: YPLibraryView?
+class MediaManager {
     var collection: PHAssetCollection?
     internal var fetchResult: PHFetchResult<PHAsset>!
     internal var previousPreheatRect: CGRect = .zero
@@ -38,46 +36,9 @@ class LibraryMediaManager {
         previousPreheatRect = .zero
     }
     
-    func updateCachedAssets(in collectionView: UICollectionView) {
-        let screenWidth = YPImagePickerConfiguration.screenWidth
-        let size = screenWidth / 4 * UIScreen.main.scale
-        let cellSize = CGSize(width: size, height: size)
-        
-        var preheatRect = collectionView.bounds
-        preheatRect = preheatRect.insetBy(dx: 0.0, dy: -0.5 * preheatRect.height)
-        
-        let delta = abs(preheatRect.midY - previousPreheatRect.midY)
-        if delta > collectionView.bounds.height / 3.0 {
-            
-            var addedIndexPaths: [IndexPath] = []
-            var removedIndexPaths: [IndexPath] = []
-            
-            previousPreheatRect.differenceWith(rect: preheatRect, removedHandler: { removedRect in
-                let indexPaths = collectionView.aapl_indexPathsForElementsInRect(removedRect)
-                removedIndexPaths += indexPaths
-            }, addedHandler: { addedRect in
-                let indexPaths = collectionView.aapl_indexPathsForElementsInRect(addedRect)
-                addedIndexPaths += indexPaths
-            })
-            
-            let assetsToStartCaching = fetchResult.assetsAtIndexPaths(addedIndexPaths)
-            let assetsToStopCaching = fetchResult.assetsAtIndexPaths(removedIndexPaths)
-            
-            imageManager?.startCachingImages(for: assetsToStartCaching,
-                                             targetSize: cellSize,
-                                             contentMode: .aspectFill,
-                                             options: nil)
-            imageManager?.stopCachingImages(for: assetsToStopCaching,
-                                            targetSize: cellSize,
-                                            contentMode: .aspectFill,
-                                            options: nil)
-            previousPreheatRect = preheatRect
-        }
-    }
-    
     func fetchVideoUrlAndCrop(for videoAsset: PHAsset,
                               cropRect: CGRect,
-                              callback: @escaping (_ videoURL: URL?) -> Void) {        
+                              callback: @escaping (_ videoURL: URL?) -> Void) {
         fetchVideoUrlAndCropWithDuration(for: videoAsset, cropRect: cropRect, duration: nil, callback: callback)
     }
     
@@ -88,6 +49,7 @@ class LibraryMediaManager {
         let videosOptions = PHVideoRequestOptions()
         videosOptions.isNetworkAccessAllowed = true
         videosOptions.deliveryMode = .highQualityFormat
+        print("Image Manger=====> \(imageManager)")
         imageManager?.requestAVAsset(forVideo: videoAsset, options: videosOptions) { asset, _, _ in
             do {
                 guard let asset = asset else { print("⚠️ PHCachingImageManager >>> Don't have the asset"); return }
@@ -138,7 +100,7 @@ class LibraryMediaManager {
                 // 5. Configuring export session
                 
                 let fileURL = URL(fileURLWithPath: NSTemporaryDirectory())
-                    .appendingUniquePathComponent(pathExtension: YPConfig.video.fileType.fileExtension)
+                    .appendingUniquePathComponent(pathExtension: "mov")
                 let exportSession = assetComposition
                     .export(to: fileURL,
                             videoComposition: videoComposition,
@@ -157,10 +119,10 @@ class LibraryMediaManager {
                                         }
                                     case .failed:
                                         print("LibraryMediaManager")
-										print("Export of the video failed : \(String(describing: session.error))")
+                                        print("Export of the video failed : \(String(describing: session.error))")
                                         callback(nil)
                                     default:
-										print("LibraryMediaManager")
+                                        print("LibraryMediaManager")
                                         print("Export session completed with \(session.status) status. Not handled.")
                                         callback(nil)
                                     }
@@ -197,15 +159,17 @@ class LibraryMediaManager {
     
     @objc func onTickExportTimer(sender: Timer) {
         if let exportSession = sender.userInfo as? AVAssetExportSession {
-            if let v = v {
+//            if let v = v {
                 if exportSession.progress > 0 {
-                    v.updateProgress(exportSession.progress)
+//                    v.updateProgress(exportSession.progress)
+                    print(exportSession.progress)
                 }
-            }
+//            }
             
             if exportSession.progress > 0.99 {
                 sender.invalidate()
-                v?.updateProgress(0)
+                print("Export completed")
+//                v?.updateProgress(0)
                 self.exportTimer = nil
             }
         }
@@ -217,14 +181,148 @@ class LibraryMediaManager {
         }
     }
 }
-func getUrlFromPHAsset(asset: PHAsset, callBack: @escaping (_ url: URL?) -> Void)
-{
-    asset.requestContentEditingInput(with: PHContentEditingInputRequestOptions(), completionHandler: { (contentEditingInput, dictInfo) in
 
-        if let strURL = (contentEditingInput!.audiovisualAsset as? AVURLAsset)?.url.absoluteString
-        {
-            print("VIDEO URL: \(strURL)")
-            callBack(URL.init(string: strURL))
+public struct MediaConfigurations {
+    public static var shared: MediaConfigurations = MediaConfigurations()
+    
+    public static var widthOniPad: CGFloat = -1
+    
+    public static var screenWidth: CGFloat {
+        var screenWidth: CGFloat = UIScreen.main.bounds.width
+        if UIDevice.current.userInterfaceIdiom == .pad && MediaConfigurations.widthOniPad > 0 {
+            screenWidth =  MediaConfigurations.widthOniPad
         }
-    })
+        return screenWidth
+    }
+    
+    public init() {}
+}
+
+internal extension CGRect {
+    
+    func differenceWith(rect: CGRect,
+                        removedHandler: (CGRect) -> Void,
+                        addedHandler: (CGRect) -> Void) {
+        if rect.intersects(self) {
+            let oldMaxY = self.maxY
+            let oldMinY = self.minY
+            let newMaxY = rect.maxY
+            let newMinY = rect.minY
+            if newMaxY > oldMaxY {
+                let rectToAdd = CGRect(x: rect.origin.x,
+                                       y: oldMaxY,
+                                       width: rect.size.width,
+                                       height: (newMaxY - oldMaxY))
+                addedHandler(rectToAdd)
+            }
+            if oldMinY > newMinY {
+                let rectToAdd = CGRect(x: rect.origin.x,
+                                       y: newMinY,
+                                       width: rect.size.width,
+                                       height: (oldMinY - newMinY))
+                addedHandler(rectToAdd)
+            }
+            if newMaxY < oldMaxY {
+                let rectToRemove = CGRect(x: rect.origin.x,
+                                          y: newMaxY,
+                                          width: rect.size.width,
+                                          height: (oldMaxY - newMaxY))
+                removedHandler(rectToRemove)
+            }
+            if oldMinY < newMinY {
+                let rectToRemove = CGRect(x: rect.origin.x,
+                                          y: oldMinY,
+                                          width: rect.size.width,
+                                          height: (newMinY - oldMinY))
+                removedHandler(rectToRemove)
+            }
+        } else {
+            addedHandler(rect)
+            removedHandler(self)
+        }
+    }
+}
+
+internal extension URL {
+    /// Adds a unique path to url
+    func appendingUniquePathComponent(pathExtension: String? = nil) -> URL {
+        var pathComponent = UUID().uuidString
+        if let pathExtension = pathExtension {
+            pathComponent += ".\(pathExtension)"
+        }
+        return appendingPathComponent(pathComponent)
+    }
+}
+ 
+internal extension AVAsset {
+    
+    /// Export the video
+    ///
+    /// - Parameters:
+    ///   - destination: The url to export
+    ///   - videoComposition: video composition settings, for example like crop
+    ///   - removeOldFile: remove old video
+    ///   - completion: resulting export closure
+    /// - Throws: YPTrimError with description
+    func export(to destination: URL,
+                videoComposition: AVVideoComposition? = nil,
+                removeOldFile: Bool = false,
+                completion: @escaping (_ exportSession: AVAssetExportSession) -> Void) -> AVAssetExportSession? {
+        guard let exportSession = AVAssetExportSession(asset: self, presetName: AVAssetExportPresetPassthrough) else {
+            print("YPImagePicker -> AVAsset -> Could not create an export session.")
+            return nil
+        }
+        
+        exportSession.outputURL = destination
+        exportSession.outputFileType = .mp4
+        exportSession.shouldOptimizeForNetworkUse = true
+        exportSession.videoComposition = videoComposition
+        
+        if removeOldFile { try? FileManager.default.removeFileIfNecessary(at: destination) }
+        
+        exportSession.exportAsynchronously(completionHandler: {
+            completion(exportSession)
+        })
+
+        return exportSession
+    }
+}
+
+internal extension FileManager {
+    func removeFileIfNecessary(at url: URL) throws {
+        guard fileExists(atPath: url.path) else {
+            return
+        }
+        
+        do {
+            try removeItem(at: url)
+        } catch let error {
+            throw YPTrimError("Couldn't remove existing destination file: \(error)")
+        }
+    }
+}
+
+internal struct YPTrimError: Error {
+    let description: String
+    let underlyingError: Error?
+    
+    init(_ description: String, underlyingError: Error? = nil) {
+        self.description = "TrimVideo: " + description
+        self.underlyingError = underlyingError
+    }
+}
+
+extension PHAsset {
+    var thumbnailImage : UIImage {
+        get {
+            let manager = PHImageManager.default()
+            let option = PHImageRequestOptions()
+            var thumbnail = UIImage()
+            option.isSynchronous = true
+            manager.requestImage(for: self, targetSize: CGSize(width: 300, height: 300), contentMode: .aspectFit, options: option, resultHandler: {(result, info)->Void in
+                thumbnail = result!
+            })
+            return thumbnail
+        }
+    }
 }

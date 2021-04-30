@@ -472,10 +472,10 @@ public class YPLibraryVC: UIViewController, YPPermissionCheckable {
                               multipleItemsCallback: @escaping (_ items: [YPMediaItem]) -> Void) {
         DispatchQueue.global(qos: .userInitiated).async {
             
-            let selectedAssets: [(asset: PHAsset, cropRect: CGRect?)] = self.selection.map {
+            let selectedAssets: [(asset: PHAsset, cropRect: CGRect?, identifier: String?)] = self.selection.map {
                 guard let asset = PHAsset.fetchAssets(withLocalIdentifiers: [$0.assetIdentifier],
 													  options: PHFetchOptions()).firstObject else { fatalError() }
-                return (asset, $0.cropRect)
+                return (asset, $0.cropRect, $0.assetIdentifier)
             }
             
             // Multiple selection
@@ -511,17 +511,21 @@ public class YPLibraryVC: UIViewController, YPPermissionCheckable {
                         }
                         
                     case .video:
-                        self.fetchVideoAndApplySettings(for: asset.asset,
-                                                             withCropRect: asset.cropRect) { videoURL in
-                            if let videoURL = videoURL {
-                                let videoItem = YPMediaVideo(thumbnail: thumbnailFromVideoPath(videoURL),
-                                                             videoURL: videoURL, asset: asset.asset)
-                                resultMediaItems.append(YPMediaItem.video(v: videoItem))
-                            } else {
-                                print("YPLibraryVC -> selectedMedia -> Problems with fetching videoURL.")
-                            }
-                            asyncGroup.leave()
-                        }
+                        
+                        let ypMediaItem = YPMediaVideo(thumbnail: nil, videoURL: nil, fromCamera: false, asset: asset.asset, assetIdentifier: asset.identifier, cropRect: asset.cropRect)
+                        resultMediaItems.append(YPMediaItem.video(v: ypMediaItem))
+                        asyncGroup.leave()
+//                        self.fetchVideoAndApplySettings(for: asset.asset,
+//                                                             withCropRect: asset.cropRect) { videoURL in
+//                            if let videoURL = videoURL {
+//                                let videoItem = YPMediaVideo(thumbnail: thumbnailFromVideoPath(videoURL),
+//                                                             videoURL: videoURL, asset: asset.asset)
+//                                resultMediaItems.append(YPMediaItem.video(v: videoItem))
+//                            } else {
+//                                print("YPLibraryVC -> selectedMedia -> Problems with fetching videoURL.")
+//                            }
+//                            asyncGroup.leave()
+//                        }
                     default:
                         break
                     }
@@ -561,22 +565,30 @@ public class YPLibraryVC: UIViewController, YPPermissionCheckable {
                 }
             } else {
                 let asset = selectedAssets.first!.asset
+                let assetId = selectedAssets.first!.identifier
+                let cropRect = selectedAssets.first!.cropRect
                 switch asset.mediaType {
                 case .audio, .unknown:
                     return
                 case .video:
-                    self.fetchVideoAndApplySettings(for: asset, callback: { videoURL in
-                        DispatchQueue.main.async {
-                            if let videoURL = videoURL {
-                                self.delegate?.libraryViewFinishedLoading()
-                                let video = YPMediaVideo(thumbnail: thumbnailFromVideoPath(videoURL),
-                                                         videoURL: videoURL, asset: asset)
-                                videoCallback(video)
-                            } else {
-                                print("YPLibraryVC -> selectedMedia -> Problems with fetching videoURL.")
-                            }
-                        }
-                    })
+                    if self.fitsVideoLengthLimits(asset: asset) == false {
+                        return
+                    }
+                    let ypMediaItem = YPMediaVideo(thumbnail: nil, videoURL: nil, fromCamera: false, asset: asset, assetIdentifier: assetId, cropRect: cropRect)
+                    videoCallback(ypMediaItem)
+                    
+//                    self.fetchVideoAndApplySettings(for: asset, callback: { videoURL in
+//                        DispatchQueue.main.async {
+//                            if let videoURL = videoURL {
+//                                self.delegate?.libraryViewFinishedLoading()
+//                                let video = YPMediaVideo(thumbnail: thumbnailFromVideoPath(videoURL),
+//                                                         videoURL: videoURL, asset: asset)
+//                                videoCallback(video)
+//                            } else {
+//                                print("YPLibraryVC -> selectedMedia -> Problems with fetching videoURL.")
+//                            }
+//                        }
+//                    })
                 case .image:
                     self.fetchImageAndCrop(for: asset) { image, exifMeta in
                         DispatchQueue.main.async {
