@@ -12,7 +12,8 @@ public struct YPIcons {
 
     public var shouldChangeDefaultBackButtonIcon = false
     public var hideBackButtonTitle = true
-    
+    public var showIconBackButton = false
+
     public var backButtonIcon: UIImage = imageFromBundle("yp_arrow_left")
     public var arrowDownIcon: UIImage = imageFromBundle("yp_arrow_down")
     public var cropIcon: UIImage = imageFromBundle("yp_iconCrop")
@@ -27,4 +28,5 @@ public struct YPIcons {
     public var captureVideoOnImage: UIImage = imageFromBundle("yp_iconVideoCaptureRecording")
     public var playImage: UIImage = imageFromBundle("yp_play")
     public var removeImage: UIImage = imageFromBundle("yp_remove")
+    public var pickerBackButtonIcon: UIImage = imageFromBundle("yp_arrow_left")
 }

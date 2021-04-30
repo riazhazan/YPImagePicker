@@ -260,21 +260,37 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
     }
     
     func updateUI() {
-		if !YPConfig.hidesCancelButton {
-			// Update Nav Bar state.
-			navigationItem.leftBarButtonItem = UIBarButtonItem(title: YPConfig.wordings.cancel,
-                                                           style: .plain,
-                                                           target: self,
-                                                           action: #selector(close))
-		}
+        if !YPConfig.hidesCancelButton {
+            // Update Nav Bar state.
+            if YPConfig.icons.showIconBackButton {
+                navigationItem.leftBarButtonItem = UIBarButtonItem(image: YPConfig.icons.pickerBackButtonIcon, style: .done, target: self, action: #selector(close))
+            } else {
+                navigationItem.leftBarButtonItem = UIBarButtonItem(title: YPConfig.wordings.cancel,
+                                                                   style: .plain,
+                                                                   target: self,
+                                                                   action: #selector(close))
+            }
+        }
         switch mode {
         case .library:
             setTitleViewWithTitle(aTitle: libraryVC?.title ?? "")
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: YPConfig.wordings.next,
-                                                                style: .done,
-                                                                target: self,
-                                                                action: #selector(done))
-            navigationItem.rightBarButtonItem?.tintColor = YPConfig.colors.tintColor
+//            let barButton = UIBarButtonItem(title: YPConfig.wordings.next,
+//                                                                style: .done,
+//                                                                target: self,
+//                                                                action: #selector(done))
+//            //barButton.tintColor = YPConfig.colors.navigationRightButtonColor
+//            barButton.setTitleTextAttributes([NSAttributedString.Key.foregroundColor : YPConfig.colors.navigationRightButtonTextColor, NSAttributedString.Key.backgroundColor : YPConfig.colors.navigationRightButtonColor], for: .normal)
+            let nextButton = UIButton()
+            nextButton.addTarget(self, action: #selector(done), for: .touchUpInside)
+            nextButton.setTitle(YPConfig.wordings.next, for: .normal)
+            nextButton.setTitleColor(YPConfig.colors.navigationRightButtonTextColor, for: .normal)
+            nextButton.setBackgroundColor(YPConfig.colors.navigationRightButtonColor, forState: .normal)
+            nextButton.layer.masksToBounds = true
+            nextButton.layer.cornerRadius = 4.0
+            nextButton.titleLabel?.font = YPConfig.fonts.rightBarButtonFont
+            nextButton.contentEdgeInsets = UIEdgeInsets(top: 0, left: 8, bottom: 0, right: 8)
+            nextButton.heightAnchor.constraint(equalToConstant: 24.0).isActive = true
+            navigationItem.rightBarButtonItem = UIBarButtonItem(customView: nextButton)
 
             // Disable Next Button until minNumberOfItems is reached.
             navigationItem.rightBarButtonItem?.isEnabled =

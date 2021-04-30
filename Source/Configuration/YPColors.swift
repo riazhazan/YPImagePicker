@@ -77,4 +77,10 @@ public struct YPColors {
     public var albumTintColor: UIColor = .ypLabel
     /// The color of the Album's title color
     public var albumTitleColor: UIColor = .ypLabel
+    
+    /// A color for background in filters.
+    public var navigationRightButtonColor: UIColor = .orange
+
+    /// A color for background in filters.
+    public var navigationRightButtonTextColor: UIColor = .white
 }
