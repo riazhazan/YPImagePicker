@@ -26,7 +26,7 @@ public class YPLibraryVC: UIViewController, YPPermissionCheckable {
     
     public required init(items: [YPMediaItem]?) {
         super.init(nibName: nil, bundle: nil)
-        title = YPConfig.wordings.libraryTitle
+        title = YPConfig.wordings.libraryTabTitle
     }
     
     public convenience init() {
@@ -574,6 +574,9 @@ public class YPLibraryVC: UIViewController, YPPermissionCheckable {
                     if self.fitsVideoLengthLimits(asset: asset) == false {
                         return
                     }
+                    let fileURL = URL(fileURLWithPath: NSTemporaryDirectory())
+                        .appendingUniquePathComponent(pathExtension: "mp4")
+                    
                     let ypMediaItem = YPMediaVideo(thumbnail: nil, videoURL: nil, fromCamera: false, asset: asset, assetIdentifier: assetId, cropRect: cropRect)
                     videoCallback(ypMediaItem)
                     

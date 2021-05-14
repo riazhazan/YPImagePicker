@@ -103,6 +103,7 @@ class ExampleViewController: UIViewController {
         /* Choose the videoCompression. Defaults to AVAssetExportPresetHighestQuality */
         config.video.compression = AVAssetExportPresetPassthrough
 
+        config.isScrollToChangeModesEnabled = false
         /* Defines the name of the album when saving pictures in the user's photo library.
            In general that would be your App name. Defaults to "DefaultYPImagePickerAlbumName" */
         // config.albumName = "ThisIsMyAlbum"
@@ -136,8 +137,16 @@ class ExampleViewController: UIViewController {
         // config.overlayView = overlayView
 
         /* Customize wordings */
-        config.wordings.libraryTitle = "Gallery"
+        config.wordings.libraryTitle = "Recents"
+        config.wordings.cameraTitle = "Photo"
+        config.wordings.videoTitle = "Video"
+        config.wordings.newPostTitle = "New Post"
+        config.wordings.cameraTabTitle = "Camera"
+        config.wordings.libraryTabTitle = "Library"
+        config.wordings.albumsTitle = "Select Album"
 
+        config.colors.navigationRightButtonColor = UIColor.red
+        config.colors.libraryTabSelectedColor = UIColor.green
         /* Defines if the status bar should be hidden when showing the picker. Default is true */
         config.hidesStatusBar = false
 

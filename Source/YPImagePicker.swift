@@ -39,7 +39,7 @@ open class YPImagePicker: UINavigationController {
     }
     
     let loadingView = YPLoadingView()
-    private let picker: YPPickerVC!
+    private let picker: YPMediaPickerVC!
     
     /// Get a YPImagePicker instance with the default configuration.
     public convenience init() {
@@ -49,7 +49,7 @@ open class YPImagePicker: UINavigationController {
     /// Get a YPImagePicker with the specified configuration.
     public required init(configuration: YPImagePickerConfiguration) {
         YPImagePickerConfiguration.shared = configuration
-        picker = YPPickerVC()
+        picker = YPMediaPickerVC()
         super.init(nibName: nil, bundle: nil)
         modalPresentationStyle = .fullScreen // Force .fullScreen as iOS 13 now shows modals as cards by default.
         picker.imagePickerDelegate = self

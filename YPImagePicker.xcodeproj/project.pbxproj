@@ -70,6 +70,7 @@
 		99CF6D2B201CB96700487F77 /* YPVideoCaptureHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99CF6D2A201CB96700487F77 /* YPVideoCaptureHelper.swift */; };
 		99D1DC2B1F9788930047F0E0 /* YPImagePickerConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99D1DC2A1F9788930047F0E0 /* YPImagePickerConfiguration.swift */; };
 		AA69BCF222E601D100FBB925 /* YPDeviceOrientationHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA69BCF122E601D100FBB925 /* YPDeviceOrientationHelper.swift */; };
+		D7551B6526402A0900A34B8D /* YPMediaPickerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7551B6426402A0800A34B8D /* YPMediaPickerVC.swift */; };
 		EB05F6E7214A7191002040AA /* YPVideoProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB05F6E6214A7191002040AA /* YPVideoProcessor.swift */; };
 		EB1AB2EA20AC1DED00BFA79F /* CGFloat+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1AB2E920AC1DED00BFA79F /* CGFloat+Extensions.swift */; };
 		EB473E17208E192800D16105 /* URL+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB473E16208E192800D16105 /* URL+Extensions.swift */; };
@@ -183,6 +184,7 @@
 		99D1DC2A1F9788930047F0E0 /* YPImagePickerConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YPImagePickerConfiguration.swift; sourceTree = "<group>"; };
 		A7FD716620755C2D0044A8E8 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = ar.lproj/YPImagePickerLocalizable.strings; sourceTree = "<group>"; };
 		AA69BCF122E601D100FBB925 /* YPDeviceOrientationHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YPDeviceOrientationHelper.swift; sourceTree = "<group>"; };
+		D7551B6426402A0800A34B8D /* YPMediaPickerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YPMediaPickerVC.swift; sourceTree = "<group>"; };
 		E3E492BB2169012B002BA807 /* ko */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/YPImagePickerLocalizable.strings; sourceTree = "<group>"; };
 		E5287F5820B908720052153D /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/YPImagePickerLocalizable.strings; sourceTree = "<group>"; };
 		EB05F6E6214A7191002040AA /* YPVideoProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YPVideoProcessor.swift; sourceTree = "<group>"; };
@@ -325,6 +327,7 @@
 			children = (
 				99C6D6B81F1FB5C100711DB2 /* YPImagePicker.swift */,
 				99C6D6B51F1FB5C100711DB2 /* YPPickerVC.swift */,
+				D7551B6426402A0800A34B8D /* YPMediaPickerVC.swift */,
 				99019E4F2018CDDF007325C2 /* Configuration */,
 				EB65C4B3209281A10037858B /* Pages */,
 				99C6D6A91F1FB5C100711DB2 /* Filters */,
@@ -607,6 +610,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				99C6D6C81F1FB5C100711DB2 /* YPFiltersView.swift in Sources */,
+				D7551B6526402A0900A34B8D /* YPMediaPickerVC.swift in Sources */,
 				EB05F6E7214A7191002040AA /* YPVideoProcessor.swift in Sources */,
 				990FD293201B3D69002A39A1 /* YPLibraryViewDelegate.swift in Sources */,
 				990FD28F201A49D3002A39A1 /* YPPermissionCheckable.swift in Sources */,

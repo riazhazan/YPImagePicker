@@ -41,4 +41,8 @@ public struct YPWordings {
     public var filter = ypLocalized("YPImagePickerFilter")
     public var crop = ypLocalized("YPImagePickerCrop")
     public var warningMaxItemsLimit = ypLocalized("YPImagePickerWarningItemsLimit")
+    
+    public var newPostTitle = ypLocalized("YPImagePickerLibrary")
+    public var libraryTabTitle = ypLocalized("YPImagePickerLibrary")
+    public var cameraTabTitle = ypLocalized("YPImagePickerPhoto")
 }

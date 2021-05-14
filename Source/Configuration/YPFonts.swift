@@ -35,6 +35,9 @@ public struct YPFonts {
 
     public var navigationBarTitleFont: UIFont = .boldSystemFont(ofSize: 17)
 
+    public var segmentBarSelectedFont: UIFont = .systemFont(ofSize: 16, weight: .medium)
+    public var segmentBarFont: UIFont = .systemFont(ofSize: 16, weight: .regular)
+
     /// The font used in the UINavigationBar rightBarButtonItem
     public var rightBarButtonFont: UIFont?
 

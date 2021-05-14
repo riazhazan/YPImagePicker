@@ -83,4 +83,9 @@ public struct YPColors {
 
     /// A color for background in filters.
     public var navigationRightButtonTextColor: UIColor = .white
+    
+    public var libraryTabSelectedColor: UIColor = .orange
+    
+    public var photoCaptureButtonColor: UIColor = .orange
+    public var videoCaptureButtonColor: UIColor = .orange
 }
