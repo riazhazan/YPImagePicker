@@ -357,7 +357,10 @@ extension YPMediaPickerVC: YPLibraryViewDelegate {
 //    Alert to be shown if no image is available in library
     public func showNoPhotosAlert() {
         let alert = UIAlertController(title:YPConfig.noPhotosErrorTitle , message: YPConfig.noPhotosErrorMessage, preferredStyle: .alert)
-        let okAction = UIAlertAction(title:  YPConfig.noPhotosAlertButtonTitle, style: .default, handler: { _ in })
+        let okAction = UIAlertAction(title: YPConfig.noPhotosAlertButtonTitle, style: .default) { _ in
+            print("Ok action")
+            self.cameraTapped()
+        }
         alert.addAction(okAction)
         self.present(alert, animated: true, completion: nil)
     }

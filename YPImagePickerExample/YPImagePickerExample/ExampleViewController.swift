@@ -145,6 +145,10 @@ class ExampleViewController: UIViewController {
         config.wordings.libraryTabTitle = "Library"
         config.wordings.albumsTitle = "Select Album"
 
+        config.noPhotosErrorTitle = "No Media on device"
+        config.noPhotosErrorMessage = "Media not available"
+        config.noPhotosAlertButtonTitle = "Ok"
+        
         config.colors.navigationRightButtonColor = UIColor.red
         config.colors.libraryTabSelectedColor = UIColor.green
         /* Defines if the status bar should be hidden when showing the picker. Default is true */
