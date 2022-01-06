@@ -94,7 +94,7 @@ extension YPPhotoCapture {
             self.videoLayer.frame = self.previewView.bounds
             self.videoLayer.videoGravity = AVLayerVideoGravity.resizeAspectFill
             if UIDevice.current.userInterfaceIdiom == .pad {
-                self.videoLayer.connection?.videoOrientation = YPHelper.transformOrientation(orientation: UIInterfaceOrientation(rawValue: UIApplication.shared.statusBarOrientation.rawValue)!)
+                self.videoLayer?.connection?.videoOrientation = YPHelper.transformOrientation(orientation: UIInterfaceOrientation(rawValue: UIApplication.shared.statusBarOrientation.rawValue)!)
             }
             self.previewView.layer.addSublayer(self.videoLayer)
         }
