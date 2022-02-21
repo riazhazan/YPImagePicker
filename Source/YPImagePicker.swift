@@ -57,7 +57,7 @@ open class YPImagePicker: UINavigationController {
         if #available(iOS 15.0, *) {
             let appearance = UINavigationBarAppearance()
             appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = UIColor.red
+            appearance.backgroundColor = UIColor(red: 9, green: 162, blue: 170)
             navigationBar.standardAppearance = appearance
             navigationBar.scrollEdgeAppearance = navigationBar.standardAppearance
         }
