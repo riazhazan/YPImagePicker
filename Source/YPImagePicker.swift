@@ -54,6 +54,13 @@ open class YPImagePicker: UINavigationController {
         modalPresentationStyle = .fullScreen // Force .fullScreen as iOS 13 now shows modals as cards by default.
         picker.imagePickerDelegate = self
         navigationBar.tintColor = .ypLabel
+        if #available(iOS 15.0, *) {
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = UIColor.red
+            navigationBar.standardAppearance = appearance
+            navigationBar.scrollEdgeAppearance = navigationBar.standardAppearance
+        }
     }
     
     public required init?(coder aDecoder: NSCoder) {
